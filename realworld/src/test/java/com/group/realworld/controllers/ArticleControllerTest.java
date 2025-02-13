@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 import java.util.UUID;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ArticleController.class)
 
 class ArticleControllerTest {
-
+    public static final String ARTICLES_ENDPOINT = "/api/articles";
     @Autowired
     private MockMvc mockMvc;
 
@@ -129,14 +130,14 @@ class ArticleControllerTest {
         UUID firstArticle = UUID.randomUUID();
         UUID secondArticle = UUID.randomUUID();
 
-        Author author_1 = new Author (UUID.randomUUID(), "Test", "test2@test.com","", false)
+        Author author_1 = new Author (UUID.randomUUID(), "Test", "test2@test.com","", false);
 
         List<Article> articleList = List.of(
-                new Article(firstArticle,"This is my title", "this-is-my-title", "This is about something", "Test test test test", author_1, createdAt, updatedAt, false , 1, tagList);
-                new Article(secondArticle,"Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updatedAt, false , 0, tagList);
+                new Article(firstArticle,"This is my title", "this-is-my-title", "This is about something", "Test test test test", author_1, createdAt, updateAt, false , 1, tagList),
+                new Article(secondArticle,"Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updateAt, false , 0, tagList)
                 );
 
-        when(articleService.getAllArticles()).thenReturn(articleList)
+        when(articleService.getAllArticles()).thenReturn(articleList);
 
         String expectedResponse = """
                     {
@@ -187,7 +188,7 @@ class ArticleControllerTest {
                 """;
 
         mockMvc.perform(
-                        get(RSVPS_ENDPOINT + "/event/" + eventId)
+                        get(ARTICLES_ENDPOINT)
                 ).andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
     }
