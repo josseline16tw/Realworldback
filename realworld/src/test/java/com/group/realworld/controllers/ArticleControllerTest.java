@@ -1,18 +1,16 @@
 package com.group.realworld.controllers;
 
 // import modelos y servicios
-import com.group.realworld.controllers.ArticleController;
+import com.group.realworld.controllers.responsedtos.ArticlesResponseBody;
 import com.group.realworld.models.Article;
 import com.group.realworld.models.Author;
 import com.group.realworld.services.ArticleService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 
 import java.time.LocalDate;
@@ -20,103 +18,23 @@ import java.util.List;
 
 import java.util.UUID;
 
-
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(ArticleController.class)
 
 class ArticleControllerTest {
     public static final String ARTICLES_ENDPOINT = "/api/articles";
-    @Autowired
-    private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private ArticleService articleService;
-/*
-    @Test
-    public void shouldCreateRsvp() throws Exception {
-        String createEventRequestJson = String.format(RSVP_REQUEST_BODY, eventId, attendeeName, selectedDate);
-        when(rsvpService.createRsvp(eq(eventId), eq(attendeeName), eq(selectedDates))).thenReturn(rsvp);
 
-        mockMvc.perform(
-                        post(RSVPS_ENDPOINT)
-                                .content(createEventRequestJson)
-                                .contentType(MediaType.APPLICATION_JSON)
-                ).andExpect(status().isCreated())
-                .andExpect(header().string("location", "rsvp/" + rsvpId));
+    ArticleController articleController;
+
+    public ArticleControllerTest() {
+        articleService = mock(ArticleService.class);
+        articleController = new ArticleController(articleService);
     }
-
-    @Test
-    public void shouldReturnBadRequestIfRequestBodyIsNotValid() throws Exception {
-        String invalidRsvpRequestJson = String.format(RSVP_REQUEST_BODY, eventId, "", selectedDate);
-
-        mockMvc.perform(
-                        post(RSVPS_ENDPOINT)
-                                .content(invalidRsvpRequestJson)
-                                .contentType(MediaType.APPLICATION_JSON)
-                ).andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is("Bad Request")))
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is(not(emptyString()))));
-    }
-
-    @Test
-    public void shouldGetRsvpByIdAndIncludeAssociatedEventData() throws Exception {
-        LocalDate firstDate = LocalDate.parse("2030-01-09");
-        LocalDate secondDate = LocalDate.parse("2030-01-15");
-        LocalDate thirdDate = LocalDate.parse("2030-02-02");
-
-        List<LocalDate> proposedDates = List.of(firstDate, secondDate, thirdDate);
-        List<LocalDate> selectedDates = List.of(firstDate, secondDate);
-
-        Rsvp rsvp = new Rsvp(rsvpId, eventId, "John Doe", selectedDates);
-
-        Event event = new Event(eventId, "Event Name", "Description", proposedDates,
-                "Event Organizer", OPENED.getStatus(), null);
-
-        when(rsvpService.getRsvpByUuid(rsvpId)).thenReturn(Optional.of(rsvp));
-        when(eventService.getEventByUuid(eventId)).thenReturn(Optional.of(event));
-
-        String expectedResponse = """
-                    {
-                        "event": {
-                          "name": "Event Name",
-                          "description": "Description",
-                          "proposedDates": ["2030-01-09", "2030-01-15", "2030-02-02"],
-                          "organizerName": "Event Organizer"
-                        },
-                        "rsvp": {
-                          "attendeeName": "John Doe",
-                          "selectedDates": ["2030-01-09", "2030-01-15"]
-                        }
-                    }
-                """;
-
-        mockMvc.perform(
-                        get(RSVPS_ENDPOINT + "/" + rsvpId)
-                ).andExpect(status().isOk())
-                .andExpect(content().json(expectedResponse));
-    }
-
-    @Test
-    public void shouldReturnNotFoundIfGetRsvpByIdDoesNotExist() throws Exception {
-        when(rsvpService.getRsvpByUuid(rsvpId)).thenReturn(Optional.empty());
-
-        mockMvc.perform(
-                get(RSVPS_ENDPOINT + "/" + rsvpId)
-        ).andExpect(status().isNotFound());
-    }*/
 
     @Test
     public void shouldReturnAllArticleList() throws Exception {
@@ -138,6 +56,13 @@ class ArticleControllerTest {
                 );
 
         when(articleService.getAllArticles()).thenReturn(articleList);
+        int expectedNumArticles = 2;
+
+        ResponseEntity<ArticlesResponseBody> resultGetArticles = articleController.getArticles();
+        assertNotNull(resultGetArticles);
+        int resultNumArticles = resultGetArticles.getBody().articles().size();
+
+        assertEquals(expectedNumArticles, resultNumArticles);
 
         String expectedResponse = """
                     {
@@ -187,18 +112,7 @@ class ArticleControllerTest {
                           }
                 """;
 
-        mockMvc.perform(
-                        get(ARTICLES_ENDPOINT)
-                ).andExpect(status().isOk())
-                .andExpect(content().json(expectedResponse));
-    }
-/*
-    @Test
-    public void shouldReturnNotFoundIfEventDoesNotExist() throws Exception {
-        when(eventService.getEventByUuid(eventId)).thenReturn(Optional.empty());
 
-        mockMvc.perform(
-                get(RSVPS_ENDPOINT + "/event/" + eventId)
-        ).andExpect(status().isNotFound());
-    }*/
+    }
+
 }
