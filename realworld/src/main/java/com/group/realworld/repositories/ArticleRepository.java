@@ -1,24 +1,28 @@
 package com.group.realworld.repositories;
 
 import com.group.realworld.models.Article;
-import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
-public class ArticleRepository {
-    private final List<Article> articleList = new ArrayList<Article>();
+/**
+ *
+ */
+public interface ArticleRepository {
 
-    public List<Article> getAllArticles() {
-        return this.articleList;
-    }
+    /**
+     * @return
+     */
+    List<Article> getAllArticles();
 
-    public Article createArticle(UUID uuid, String title, String body, String description, List<String> tags){
-       Article article = new Article(uuid,title, null, description, body, null, null, null, false , 0, tags);
-       this.articleList.add(article);
-       return article;
-    }
+    /**
+     * @param uuid
+     * @param title
+     * @param body
+     * @param description
+     * @param tags
+     * @return
+     */
+    Article createArticle(UUID uuid, String title, String body, String description, List<String> tags);
 
 }

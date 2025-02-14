@@ -3,11 +3,10 @@ package com.group.realworld.Services;
 import com.group.realworld.models.Article;
 import com.group.realworld.models.Author;
 import com.group.realworld.repositories.ArticleRepository;
+import com.group.realworld.repositories.InMemoryArticleRepository;
 import com.group.realworld.services.ArticleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 
 public class ArticleServiceTest {
 
@@ -31,11 +31,13 @@ public class ArticleServiceTest {
     private final String description = "This is about something";
     private final String body = "Test test test test";
     private final List<String> tagList = List.of("test");
+
     @BeforeEach
     public void setUp() {
         articleRepository = mock(ArticleRepository.class);
         articleService = new ArticleService(articleRepository);
     }
+
     @Test
     public void shouldReturnAllArticleList() throws Exception {
         LocalDate createdAt = LocalDate.parse("2025-01-21");
@@ -48,11 +50,11 @@ public class ArticleServiceTest {
         UUID firstArticle = UUID.randomUUID();
         UUID secondArticle = UUID.randomUUID();
 
-        Author author_1 = new Author (UUID.randomUUID(), "Test", "test2@test.com","", false);
+        Author author_1 = new Author(UUID.randomUUID(), "Test", "test2@test.com", "", false);
 
         List<Article> articleList = List.of(
-                new Article(firstArticle,"This is my title", "this-is-my-title", "This is about something", "Test test test test", author_1, createdAt, updateAt, false , 1, tagList),
-                new Article(secondArticle,"Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updateAt, false , 0, tagList)
+                new Article(firstArticle, "This is my title", "this-is-my-title", "This is about something", "Test test test test", author_1, createdAt, updateAt, false, 1, tagList),
+                new Article(secondArticle, "Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updateAt, false, 0, tagList)
         );
         when(articleRepository.getAllArticles()).thenReturn(articleList);
 
@@ -64,8 +66,8 @@ public class ArticleServiceTest {
 
     @Test
     public void shouldCreateArticleWithGeneratedUuid() throws Exception {
-        Article article = new Article(UUID.randomUUID(),this.title, null, this.description, this.body, null, null, null, false , 0, this.tagList);
-        when(articleRepository.createArticle(any(UUID.class),eq(title),eq(description),eq(body),eq(tagList))).thenReturn(article);
+        Article article = new Article(UUID.randomUUID(), this.title, null, this.description, this.body, null, null, null, false, 0, this.tagList);
+        when(articleRepository.createArticle(any(UUID.class), eq(title), eq(description), eq(body), eq(tagList))).thenReturn(article);
 
         Article result = articleService.createArticle(title, description, body, tagList);
         assertEquals(article.getUuid(), result.getUuid());

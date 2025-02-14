@@ -41,7 +41,7 @@ class ArticleControllerTest {
     private final String description = "This is about something";
     private final String body = "Test test test test";
     private final List<String> tagList = List.of("test");
-    @Mock
+
     private ArticleService articleService;
 
     ArticleController articleController;
