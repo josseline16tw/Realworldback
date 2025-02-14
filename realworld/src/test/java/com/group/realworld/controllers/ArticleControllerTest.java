@@ -1,6 +1,8 @@
 package com.group.realworld.controllers;
 
 // import modelos y servicios
+import com.group.realworld.controllers.requestdtos.ArticleRequestBody;
+import com.group.realworld.controllers.responsedtos.ArticleResponseBody;
 import com.group.realworld.controllers.responsedtos.ArticlesResponseBody;
 import com.group.realworld.models.Article;
 import com.group.realworld.models.Author;
@@ -20,12 +22,25 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class ArticleControllerTest {
     public static final String ARTICLES_ENDPOINT = "/api/articles";
-
+    public static final String CREATE_ARTICLE_REQUEST_BODY = """
+            {
+              "article": {
+                "title": "%s",
+                "description": "%s",
+                "body": "%s",
+                "tagList": ["%s"]
+              }
+            }
+            """;
+    private final String title = "This is my title";
+    private final String description = "This is about something";
+    private final String body = "Test test test test";
+    private final List<String> tagList = List.of("test");
     @Mock
     private ArticleService articleService;
 
@@ -41,18 +56,14 @@ class ArticleControllerTest {
         LocalDate createdAt = LocalDate.parse("2025-01-21");
         LocalDate updateAt = LocalDate.parse("2025-01-21");
 
-
-        List<String> tagList = List.of("test");
-        List<String> tagList_2 = List.of("TDD", "TDD2");
-
         UUID firstArticle = UUID.randomUUID();
         UUID secondArticle = UUID.randomUUID();
 
         Author author_1 = new Author (UUID.randomUUID(), "Test", "test2@test.com","", false);
 
         List<Article> articleList = List.of(
-                new Article(firstArticle,"This is my title", "this-is-my-title", "This is about something", "Test test test test", author_1, createdAt, updateAt, false , 1, tagList),
-                new Article(secondArticle,"Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updateAt, false , 0, tagList)
+                new Article(firstArticle,this.title, "this-is-my-title", this.description, this.body, author_1, createdAt, updateAt, false , 1, this.tagList),
+                new Article(secondArticle,"Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updateAt, false , 0, this.tagList)
                 );
 
         when(articleService.getAllArticles()).thenReturn(articleList);
@@ -115,4 +126,18 @@ class ArticleControllerTest {
 
     }
 
+    @Test
+    public void shouldCreateArticle() throws Exception {
+        //String createArticleRequestJson = String.format(CREATE_ARTICLE_REQUEST_BODY, this.title, this.description, this.body, this.tagList);
+        Article article = new Article(UUID.randomUUID(),this.title, null, this.description, this.body, null, null, null, false , 0, this.tagList);
+        when(articleService.createArticle(eq(this.title), eq(this.description), eq(this.body), eq(this.tagList))).thenReturn(article);
+        ArticleRequestBody articleRequestBody = new ArticleRequestBody(this.title, this.description, this.body, this.tagList);
+        //cuando se testea el body createArticleRequestJson
+        ResponseEntity<ArticleResponseBody> resultGetArticle = articleController.createArticle(articleRequestBody);
+        assertNotNull(resultGetArticle);
+        String articleTitle = resultGetArticle.getBody().title();
+
+        assertEquals(this.title, articleTitle);
+        verify(articleService).createArticle(this.title, this.description, this.body, this.tagList);
+    }
 }

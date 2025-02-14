@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +27,10 @@ public class ArticleServiceTest {
     //@InjectMocks
     private ArticleService articleService;
 
-
+    private final String title = "This is my title";
+    private final String description = "This is about something";
+    private final String body = "Test test test test";
+    private final List<String> tagList = List.of("test");
     @BeforeEach
     public void setUp() {
         articleRepository = mock(ArticleRepository.class);
@@ -55,5 +60,19 @@ public class ArticleServiceTest {
 
         assertEquals(2, resultAllArticles.size());
         assertEquals(articleList.get(0).getUuid(), resultAllArticles.get(0).getUuid());
+    }
+
+    @Test
+    public void shouldCreateArticleWithGeneratedUuid() throws Exception {
+        Article article = new Article(UUID.randomUUID(),this.title, null, this.description, this.body, null, null, null, false , 0, this.tagList);
+        when(articleRepository.createArticle(any(UUID.class),eq(title),eq(description),eq(body),eq(tagList))).thenReturn(article);
+
+        Article result = articleService.createArticle(title, description, body, tagList);
+        assertEquals(article.getUuid(), result.getUuid());
+        assertEquals(article.getTitle(), result.getTitle());
+        assertEquals(article.getDescription(), result.getDescription());
+        assertEquals(article.getBody(), result.getBody());
+        assertEquals(article.getTagList(), result.getTagList());
+
     }
 }
