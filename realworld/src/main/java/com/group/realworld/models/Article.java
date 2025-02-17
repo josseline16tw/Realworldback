@@ -1,6 +1,7 @@
 package com.group.realworld.models;
 
 import com.group.realworld.models.Author;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,14 @@ public class Article {
     private boolean favorited;
     private int favoritesCount;
     private List<String> tagList;
+
+    public Article() {
+        this(null, null, null, null, null);
+    }
+
+    public Article(UUID uuid, String title, String description, String body, Author author) {
+        this(uuid, title, null, description, body, author, LocalDate.now(), LocalDate.now(), false, 0, List.of());
+    }
 
     public Article(UUID uuid, String title, String slug, String description, String body, Author author, LocalDate createdAt, LocalDate updatedAt, boolean favorited, int favoritesCount, List<String> tagList) {
         this.uuid = uuid;

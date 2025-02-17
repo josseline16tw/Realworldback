@@ -21,6 +21,7 @@ public class ArticleService {
         return articleRepository.getAllArticles();
     }
 
+    // TODO: Update createArticle to receive article author.
     public Article createArticle(String title, String body, String description, List<String> tags) {
         UUID generatedUuid = UUID.randomUUID();
         return articleRepository.createArticle(generatedUuid, title, body, description, tags);
