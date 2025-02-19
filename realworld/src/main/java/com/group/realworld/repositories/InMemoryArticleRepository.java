@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
+@Repository("memory")
 public class InMemoryArticleRepository implements ArticleRepository {
     private final List<Article> articleList = new ArrayList<Article>();
 

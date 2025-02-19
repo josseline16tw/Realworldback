@@ -3,6 +3,8 @@ package com.group.realworld.services;
 import com.group.realworld.models.Article;
 import com.group.realworld.repositories.ArticleRepository;
 import com.group.realworld.repositories.InMemoryArticleRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +15,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    public ArticleService(ArticleRepository articleRepository) {
+    public ArticleService(@Qualifier("postgres") ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
     }
 
