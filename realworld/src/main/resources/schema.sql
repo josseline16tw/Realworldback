@@ -8,7 +8,7 @@ create table authors (
 
 create table tags (
     id uuid not null primary key,
-    name text not null
+    name text unique not null
 );
 
 create table articles (
