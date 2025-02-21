@@ -19,8 +19,8 @@ public class ArticleService {
         this.articleRepository = articleRepository;
     }
 
-    public List<Article> getAllArticles() {
-        return articleRepository.getAllArticles();
+    public List<Article> getAllArticles(String tag) {
+        return articleRepository.getAllArticles(tag);
     }
 
     // TODO: Update createArticle to receive article author.

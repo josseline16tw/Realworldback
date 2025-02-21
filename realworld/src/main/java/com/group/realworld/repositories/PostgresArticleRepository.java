@@ -2,12 +2,10 @@ package com.group.realworld.repositories;
 
 import com.group.realworld.models.Article;
 import com.group.realworld.models.Author;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ public class PostgresArticleRepository implements ArticleRepository {
     }
 
     @Override
-    public List<Article> getAllArticles() {
+    public List<Article> getAllArticles(String tag) {
         final var sql = """
                 select ar.id, title, description, body, author_id, username, email, string_agg(t.name, ',') as tags
                   from articles ar
@@ -58,8 +56,9 @@ public class PostgresArticleRepository implements ArticleRepository {
                     inner join tags t
                        on at.tag_id = t.id
                   group by ar.id, title, description, body, author_id, username, email
+                  HAVING COALESCE(?, '') = '' OR STRING_AGG(t.name, ',') ILIKE '%' || ? || '%';
                 """;
-        final var articleDaos = template.query(sql, new ArticleRowMapper());
+        final var articleDaos = template.query(sql, new ArticleRowMapper(), tag, tag);
         final var articles = articleDaos
                 .stream()
                 .map(dao -> {
@@ -75,12 +74,12 @@ public class PostgresArticleRepository implements ArticleRepository {
 
     @Override
     public Article createArticle(UUID uuid, String title, String body, String description, List<String> tags) {
-        UUID authorId = UUID.fromString("c14c0bd1-1604-430c-93f9-7bab6a6e3c56");
+        UUID authorId = UUID.fromString("8dc6aca2-8234-4dad-898a-3a79dd988789");
         final var sql = """
-                insert into articles (id, title, description, body, author_id)
-                values (?, ?, ?, ?, ?)
-                """;
-        var result = template.update(sql, uuid,title,description,body,authorId);
+            INSERT INTO articles (id, title, description, "body", author_id)
+            VALUES (?, ?, ?, ?, ?)
+            """;
+        var result = template.update(sql, uuid, title, description, body, authorId);
         if(!tags.isEmpty()){
             var insertedTags = insertTags(tags);
             createTagsArticle(insertedTags,uuid);
@@ -94,13 +93,10 @@ public class PostgresArticleRepository implements ArticleRepository {
                        on ar.id = at.article_id
                     inner join tags t
                        on at.tag_id = t.id
-                  where ar.id = "%s"
+                  where ar.id = ?
                   group by ar.id, title, description, body, author_id, username, email
-                """
-                .formatted(uuid.toString());
-
-        final var dao = template.queryForObject(sql, new ArticleRowMapper());
-
+                """;
+        final var dao = template.queryForObject(sqlGetArticle, new ArticleRowMapper(), uuid);
         final var article = new Article(
                 UUID.fromString(dao.uuid), dao.title, dao.description, dao.body,
                 new Author(UUID.fromString(dao.author.uuid), dao.author.username, dao.author.email));

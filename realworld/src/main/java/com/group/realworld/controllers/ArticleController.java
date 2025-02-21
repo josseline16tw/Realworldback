@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -20,8 +21,8 @@ public class ArticleController {
         this.articleService = articleService;
     }
     @GetMapping
-    public ResponseEntity<ArticlesResponseBody> getArticles() {
-        List<Article> articleList = articleService.getAllArticles();
+    public ResponseEntity<ArticlesResponseBody> getArticles(@RequestParam Optional<String> tag) {
+        List<Article> articleList = articleService.getAllArticles(tag.orElse(null));
         List<ArticleResponseBody> articleResponseBodyList = articleList.stream().map( article ->
                 new ArticleResponseBody(
                         article.getUuid().toString(),

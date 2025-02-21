@@ -11,9 +11,10 @@ import java.util.UUID;
 public interface ArticleRepository {
 
     /**
+     * @param tag
      * @return
      */
-    List<Article> getAllArticles();
+    List<Article> getAllArticles(String tag);
 
     /**
      * @param uuid

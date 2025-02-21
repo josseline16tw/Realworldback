@@ -11,7 +11,7 @@ import java.util.UUID;
 public class InMemoryArticleRepository implements ArticleRepository {
     private final List<Article> articleList = new ArrayList<Article>();
 
-    public List<Article> getAllArticles() {
+    public List<Article> getAllArticles(String tag) {
         return this.articleList;
     }
 
