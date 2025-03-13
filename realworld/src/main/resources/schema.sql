@@ -2,15 +2,15 @@ create table users (
     id uuid not null primary key,
     username text not null,
     email text not null,
-    password text not null
+    password text not null,
+    bio text,
+    image text
 );
 
 create table authors (
     id uuid not null primary key,
     username text not null unique,
     email text not null unique,
-    bio text,
-    image text, -- URL
     user_id uuid not null references users(id)
 );
 
