@@ -26,15 +26,17 @@ public class UserService {
 
     public UserResponseBody registerUser(RegisterRequestBody requestBody){
 
-        if (userRepository.getUserByEmail(requestBody.email()) != null) {
-            throw new RuntimeException("Email already in use");
+        if (userRepository.getUserByEmail(requestBody.email()) == null) {
+            System.out.println("Despues de funcion");
+            User user = new User(UUID.randomUUID(), requestBody.username(), requestBody.email(), passwordEncoder.encode(requestBody.password()));
+            userRepository.saveUser(user);
+
+            String token = jwtUtil.generateToken(user.getEmail());
+
+            return new UserResponseBody(user.getUsername(), user.getEmail(), user.getBio(), user.getImage(), token);
         }
+        System.out.println("Email already in use");
+        return new UserResponseBody(null, null, null, null, null);
 
-        User user = new User(UUID.randomUUID(), requestBody.username(), requestBody.email(), passwordEncoder.encode(requestBody.password()));
-        userRepository.saveUser(user);
-
-        String token = jwtUtil.generateToken(user.getEmail());
-
-        return new UserResponseBody(user.getUsername(), user.getEmail(), user.getBio(), user.getImage(), token);
     }
 }
