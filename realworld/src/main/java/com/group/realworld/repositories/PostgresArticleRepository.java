@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static java.lang.Integer.parseInt;
+
 
 @Repository("postgres")
 public class PostgresArticleRepository implements ArticleRepository {
@@ -45,7 +47,7 @@ public class PostgresArticleRepository implements ArticleRepository {
     }
 
     @Override
-    public List<Article> getAllArticles(String tag) {
+    public List<Article> getAllArticles(String tag, String limit, String offset) {
         final var sql = """
                 select ar.id, title, description, body, author_id, username, email, string_agg(t.name, ',') as tags
                   from articles ar
@@ -56,9 +58,18 @@ public class PostgresArticleRepository implements ArticleRepository {
                     inner join tags t
                        on at.tag_id = t.id
                   group by ar.id, title, description, body, author_id, username, email
-                  HAVING COALESCE(?, '') = '' OR STRING_AGG(t.name, ',') ILIKE '%' || ? || '%';
+                  HAVING COALESCE(?, '') = '' OR STRING_AGG(t.name, ',') ILIKE '%' || ? || '%'
+                  LIMIT ?
+                  OFFSET ?;
                 """;
-        final var articleDaos = template.query(sql, new ArticleRowMapper(), tag, tag);
+
+        if (limit == null){
+            limit = "20";
+        }
+        if (offset == null) {
+            offset = "0";
+        }
+        final var articleDaos = template.query(sql, new ArticleRowMapper(), tag, tag, parseInt(limit), parseInt(offset));
         final var articles = articleDaos
                 .stream()
                 .map(dao -> {

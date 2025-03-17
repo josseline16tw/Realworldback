@@ -1,5 +1,6 @@
 package com.group.realworld.Services;
 
+import com.group.realworld.controllers.requestdtos.LoginRequestBody;
 import com.group.realworld.controllers.requestdtos.RegisterRequestBody;
 import com.group.realworld.controllers.responsedtos.UserResponseBody;
 import com.group.realworld.models.User;
@@ -8,7 +9,6 @@ import com.group.realworld.repositories.PostgresUserRepository;
 import com.group.realworld.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
@@ -56,5 +56,23 @@ public class UserServiceTest {
         UserResponseBody resultado = userService.registerUser(requestBody);
         assertEquals(responseBody.email(),resultado.email());
 
+    }
+
+    @Test
+    public void shouldReturnLoggedUser(){
+        LoginRequestBody loginRequestBody = new LoginRequestBody("juan@juan.com", "1234");
+        when(userRepository.getUserByEmail("juan@juan.com")).thenReturn(user);
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+        UserResponseBody resultado = userService.loginUser(loginRequestBody);
+
+        assertEquals("juan@juan.com", resultado.email());
+    }
+
+    @Test
+    public void shouldReturnInvalidCredentials(){
+        LoginRequestBody loginRequestBody = new LoginRequestBody("juan@juan.com", "1234");
+        when(userRepository.getUserByEmail("juan@juan.com")).thenReturn(null);
+        UserResponseBody resultado = userService.loginUser(loginRequestBody);
+        assertNull(resultado.email());
     }
 }

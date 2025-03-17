@@ -1,5 +1,6 @@
 package com.group.realworld.services;
 
+import com.group.realworld.controllers.requestdtos.LoginRequestBody;
 import com.group.realworld.controllers.requestdtos.RegisterRequestBody;
 import com.group.realworld.controllers.responsedtos.UserResponseBody;
 import com.group.realworld.models.User;
@@ -38,5 +39,14 @@ public class UserService {
         System.out.println("Email already in use");
         return new UserResponseBody(null, null, null, null, null);
 
+    }
+
+    public UserResponseBody loginUser(LoginRequestBody loginRequestBody){
+        User user = userRepository.getUserByEmail(loginRequestBody.email());
+        if ( user == null || !(passwordEncoder.matches(loginRequestBody.password(), user.getPassword()))){
+            return new UserResponseBody(null, null, null, null, null);
+        }
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new UserResponseBody(user.getUsername(), user.getEmail(), user.getBio(), user.getImage(), token);
     }
 }

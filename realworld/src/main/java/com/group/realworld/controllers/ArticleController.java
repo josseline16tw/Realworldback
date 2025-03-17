@@ -21,8 +21,8 @@ public class ArticleController {
         this.articleService = articleService;
     }
     @GetMapping
-    public ResponseEntity<ArticlesResponseBody> getArticles(@RequestParam Optional<String> tag) {
-        List<Article> articleList = articleService.getAllArticles(tag.orElse(null));
+    public ResponseEntity<ArticlesResponseBody> getArticles(@RequestParam Optional<String> tag, @RequestParam Optional<String> limit, @RequestParam Optional<String> offset) {
+        List<Article> articleList = articleService.getAllArticles(tag.orElse(null), limit.orElse(null), offset.orElse(null));
         List<ArticleResponseBody> articleResponseBodyList = articleList.stream().map( article ->
                 new ArticleResponseBody(
                         article.getUuid().toString(),

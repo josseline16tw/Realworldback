@@ -56,9 +56,9 @@ public class ArticleServiceTest {
                 new Article(firstArticle, "This is my title", "this-is-my-title", "This is about something", "Test test test test", author_1, createdAt, updateAt, false, 1, tagList),
                 new Article(secondArticle, "Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updateAt, false, 0, tagList)
         );
-        when(articleRepository.getAllArticles(null)).thenReturn(articleList);
+        when(articleRepository.getAllArticles(null, null, null)).thenReturn(articleList);
 
-        List<Article> resultAllArticles = articleService.getAllArticles(null);
+        List<Article> resultAllArticles = articleService.getAllArticles(null, null, null);
 
         assertEquals(2, resultAllArticles.size());
         assertEquals(articleList.get(0).getUuid(), resultAllArticles.get(0).getUuid());

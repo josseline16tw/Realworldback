@@ -66,10 +66,10 @@ class ArticleControllerTest {
                 new Article(secondArticle,"Test -1", "test-1", "Test -123", "test test test test", author_1, createdAt, updateAt, false , 0, this.tagList)
                 );
 
-        when(articleService.getAllArticles(null)).thenReturn(articleList);
+        when(articleService.getAllArticles(null, null, null)).thenReturn(articleList);
         int expectedNumArticles = 2;
 
-        ResponseEntity<ArticlesResponseBody> resultGetArticles = articleController.getArticles(null);
+        ResponseEntity<ArticlesResponseBody> resultGetArticles = articleController.getArticles(null, null, null);
         assertNotNull(resultGetArticles);
         int resultNumArticles = resultGetArticles.getBody().articles().size();
 

@@ -14,7 +14,7 @@ public interface ArticleRepository {
      * @param tag
      * @return
      */
-    List<Article> getAllArticles(String tag);
+    List<Article> getAllArticles(String tag, String limit, String offset);
 
     /**
      * @param uuid

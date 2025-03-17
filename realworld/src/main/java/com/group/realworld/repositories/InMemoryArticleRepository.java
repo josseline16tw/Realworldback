@@ -15,6 +15,11 @@ public class InMemoryArticleRepository implements ArticleRepository {
         return this.articleList;
     }
 
+    @Override
+    public List<Article> getAllArticles(String tag, String limit, String offset) {
+        return this.articleList;
+    }
+
     public Article createArticle(UUID uuid, String title, String body, String description, List<String> tags) {
         Article article = new Article(uuid, title, null, description, body, null, null, null, false, 0, tags);
         this.articleList.add(article);
