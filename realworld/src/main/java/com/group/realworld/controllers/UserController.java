@@ -7,15 +7,12 @@ import com.group.realworld.models.User;
 import com.group.realworld.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
@@ -24,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/users")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequestBody requestBody){
         UserResponseBody userResponseBody = userService.registerUser(requestBody);
         if (userResponseBody.email() == null) {
@@ -33,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok(userResponseBody);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/users/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequestBody loginRequestBody){
         UserResponseBody userResponseBody = userService.loginUser(loginRequestBody);
         if( userResponseBody.email() == null){
@@ -41,4 +38,9 @@ public class UserController {
         }
         return ResponseEntity.ok(userResponseBody);
     }
+    @GetMapping("/user")
+    public ResponseEntity<?> getCurrentUser(){
+        return null;
+    }
+
 }
